@@ -43,6 +43,6 @@ jobs:
         with:
           context: .
           push: true
-          repository: dall06/go_api_image
+          repository: dall06/crm_api_img
           file: docker/Dockerfile.dev
-          tags: dall06/go_api_image:latest
+          tags: dall06/crm_api_img:latest
