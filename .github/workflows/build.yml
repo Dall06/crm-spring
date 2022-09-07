@@ -37,12 +37,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
           repository: dall06/go_api_image
-          file: docker/Dockerfile.prod
+          file: docker/Dockerfile.dev
           tags: dall06/go_api_image:latest
