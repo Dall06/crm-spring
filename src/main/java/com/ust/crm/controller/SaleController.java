@@ -13,10 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/sales")
+@RequestMapping("/sale")
 @RequiredArgsConstructor
 public class SaleController {
     private final SaleService service;
+
+    @GetMapping("/")
+    public ResponseEntity<String> hello(){
+        return ResponseEntity.ok("hello to sales api route");
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Sale> getSale(@PathVariable Long id){

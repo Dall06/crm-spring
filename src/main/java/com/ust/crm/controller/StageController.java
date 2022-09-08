@@ -17,7 +17,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StageController {
     private final StageService service;
-
+    @GetMapping("/")
+    public ResponseEntity<String> hello(){
+        return ResponseEntity.ok("hello to stages api route");
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Stage> getStage(@PathVariable Long id){
         Optional<Stage> stageDb = service.getStage(id);

@@ -18,15 +18,20 @@ import java.util.Optional;
 public class VisitController {
     private final VisitService service;
 
+    @GetMapping("/")
+    public ResponseEntity<String> hello(){
+        return ResponseEntity.ok("hello to visits api route");
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Visit> getVisit(@PathVariable Long id){
-        Optional<Visit> visitaDb = service.getVisit(id);
+        Optional<Visit> visit = service.getVisit(id);
 
-        if (visitaDb.isEmpty()) {
+        if (visit.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "visit not found");
         }
 
-        return ResponseEntity.ok(visitaDb.get());
+        return ResponseEntity.ok(visit.get());
     }
 
     @GetMapping

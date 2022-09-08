@@ -18,6 +18,11 @@ import java.util.Optional;
 public class ProductController {
     private final ProductService service;
 
+    @GetMapping("/")
+    public ResponseEntity<String> hello(){
+        return ResponseEntity.ok("hello to products api route");
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable Long id){
         Optional<Product> productoDb = service.getProduct(id);

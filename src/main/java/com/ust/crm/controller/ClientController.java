@@ -13,10 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/clients")
+@RequestMapping("/client")
 @RequiredArgsConstructor
 public class ClientController {
     private final ClientService service;
+
+    @GetMapping("/")
+    public ResponseEntity<String> hello(){
+        return ResponseEntity.ok("hello to clients api route");
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Client> getClient(@PathVariable Long id){
@@ -29,7 +34,7 @@ public class ClientController {
         return ResponseEntity.ok(clientDb.get());
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity <List<Client>> getClients(){
         return ResponseEntity.ok(service.getClients());
     }

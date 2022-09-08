@@ -20,6 +20,13 @@ public class StagesRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        List<StageEntity> currentStages = stageRepository.findAll();
+
+        if (currentStages.size() == 7) {
+            System.out.println("all values already in db");
+            return;
+        }
+
         StageEntity stage1 = stageMapper.modelToEntity(Stage.builder().name("wait").order(0).build());
         StageEntity stage2 = stageMapper.modelToEntity(Stage.builder().name("exploration meeting").order(1).build());
         StageEntity stage3 = stageMapper.modelToEntity(Stage.builder().name("established goals").order(2).build());
@@ -30,7 +37,13 @@ public class StagesRunner implements CommandLineRunner {
 
         List<StageEntity> stages = Arrays.asList(stage1, stage2, stage3, stage4, stage5, stage6, stage7);
 
-        stageRepository.saveAll(stages);
+        if (currentStages.equals(stages)) {
+            System.out.println("Values already in db");
+            return;
+        }
 
+        stages.removeAll(currentStages);
+
+        stageRepository.saveAll(stages);
     }
 }
