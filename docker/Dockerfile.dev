@@ -1,19 +1,14 @@
-FROM gradle:jdk11-alpine
+FROM openjdk:11-jdk-alpine AS build
+WORKDIR /workspace/app
 
-VOLUME gradle-cache:/home/gradle/.gradle
+COPY . /workspace/app
+RUN --mount=type=cache,target=/root/.gradle ./gradlew clean build
+RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/*.jar)
+
+FROM openjdk:11-jdk-alpine
 VOLUME /tmp
-
-USER root
-ADD . /home/gradle/project
-WORKDIR /home/gradle/project
-
-RUN chown gradle:gradle -R /home/gradle
-
-USER gradle
-RUN gradle bootJar
-
-RUN mv /home/gradle/project/build/libs/*.jar /home/gradle/project/app.jar
-
-EXPOSE 8080
-
-ENTRYPOINT ["java","-Dspring.profiles.active=prod","-Djava.security.egd=file:/dev/./urandom","-jar","/home/gradle/project/app.jar"]
+ARG DEPENDENCY=/workspace/app/target/dependency
+COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+ENTRYPOINT ["java","-cp","app:app/lib/*","hello.Application"]
