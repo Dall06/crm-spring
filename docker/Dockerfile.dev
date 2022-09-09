@@ -1,17 +1,9 @@
-FROM openjdk:11
-WORKDIR /workspace/app
+FROM gradle:7.5.1-jdk11-alpine AS build
+COPY --chown=gradle:gradle . /home/gradle/src/producer
+WORKDIR /home/gradle/src/producer
+RUN gradle bootJar --no-daemon --stacktrace
 
-COPY gradle gradle
-COPY build.gradle settings.gradle gradlew ./
-COPY src src
-
-RUN ./gradlew build -x test
-RUN mkdir -p build/libs/dependency && (cd build/libs/dependency; jar -xf ../*.jar)
-
-FROM openjdk:11
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/build/libs/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.ust.crm"]
+FROM openjdk:11jdk-alpine
+ARG JAR_FILE=build/libs/*.jar
+COPY --from=build /home/gradle/src/producer/build/libs/*.jar producer.jar
+ENTRYPOINT ["java","-jar","/producer.jar"]
