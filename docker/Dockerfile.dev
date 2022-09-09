@@ -1,20 +1,17 @@
-FROM openjdk:11 AS build
+FROM openjdk:8-jdk-alpine as build
+WORKDIR /workspace/app
 
-RUN mkdir -p /workspace
-WORKDIR /workspace
-COPY . .
-RUN yum install -y wget unzip
-RUN wget -O /tmp/gradle.zip https://services.gradle.org/distributions/gradle-7.5.1-bin.zip && \
-    unzip /tmp/gradle.zip -d /opt && \
-    mv /opt/gradle-7.5.1 /opt/gradle
+COPY gradle gradle
+COPY build.gradle settings.gradle gradlew ./
+COPY src src
 
-RUN /opt/gradle/bin/gradle build
+RUN ./gradlew build -x test
+RUN mkdir -p build/libs/dependency && (cd build/libs/dependency; jar -xf ../*.jar)
 
-# --
-
-FROM openjdk:11 AS deploy
-
-RUN mkdir -p /opt/app
-COPY --from=build /workspace/build/libs/myapp-FINAL.jar /opt/app/myapp.jar
-
-ENTRYPOINT ["java", "-jar", "/opt/app/myapp.jar"]
+FROM openjdk:8-jdk-alpine
+VOLUME /tmp
+ARG DEPENDENCY=/workspace/app/build/libs/dependency
+COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.Application"]
