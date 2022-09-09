@@ -31,8 +31,10 @@ jobs:
           name: Build & push Docker image
           with:
             image: dall06/crm-spring
-            tags: v1, latest, springio/gs-spring-boot-docker
+            tags: springio, gs-spring-boot-docker
             registry: docker.io
             dockerfile: docker/Dockerfile.dev
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
+            buildArgs: |
+              JAR_FILE=build/libs/\*.jar
