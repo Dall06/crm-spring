@@ -25,8 +25,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./crm-spring
           push: true
           repository: dall06/crm_api_image
-          file: docker/Dockerfile.dev
+          file: crm-spring/docker/Dockerfile.dev
           tags: dall06/crm_api_image:latest
