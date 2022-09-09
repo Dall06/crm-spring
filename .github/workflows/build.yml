@@ -33,7 +33,7 @@ jobs:
             context: .
             push: true
             repository: dall06/go_api_image
-            file: docker/Dockerfile.prod
+            file: docker/Dockerfile.dev
             tags: dall06/go_api_image:latest
             args: |
               JAR_FILE=build/libs/\*.jar
