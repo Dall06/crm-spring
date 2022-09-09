@@ -36,5 +36,3 @@ jobs:
             dockerfile: docker/Dockerfile.dev
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
-            buildArgs: |
-              JAR_FILE=build/libs/\*.jar
