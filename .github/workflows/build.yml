@@ -28,7 +28,7 @@ jobs:
           # Use docker.io for Docker Hub if empty
           REGISTRY: docker.io
           # github.repository as <your-account>/<your-repo>
-          IMAGE_NAME: ${{ Dall06/crm-spring }}
+          IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
           # Tag name of the image to publish
           tag-name: ${{ github.event.release.crm-spring-api }}
           # Username to login to registry
