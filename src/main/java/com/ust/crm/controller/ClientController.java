@@ -39,7 +39,7 @@ public class ClientController {
         return ResponseEntity.ok(service.getClients());
     }
 
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<Void> postClient(@RequestBody Client client){
         Client newClient = service.saveClient(client);
 
