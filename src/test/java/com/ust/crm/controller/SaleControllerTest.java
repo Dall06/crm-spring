@@ -14,7 +14,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +25,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -60,20 +60,31 @@ class SaleControllerTest {
                 Product.builder().id(3L).name("Jamon").category("Alimentos").createdAt(deserializer.get()).registryNumber("400").price(100).build()
         );
 
-        given(service.getSale(anyLong())).willReturn(
-                Optional.of(Sale.builder().id(1L).products(products).createdAt(deserializer.get()).client(
-                                Client.builder().id(1).name("Angel").email("angel@mail.com").address("Balcones").employeesQty(50).build())
+        Optional<Sale> sale = Optional.of(
+                Sale.builder()
+                        .id(1L)
+                        .products(products)
+                        .createdAt(LocalDate.now())
+                        .client(
+                                Client.builder()
+                                        .id(1)
+                                        .name("Angel")
+                                        .email("angel@mail.com")
+                                        .address("Balcones")
+                                        .employeesQty(50)
+                                        .build())
                         .qty(4000)
                         .createdAt(deserializer.get())
-                        .build()));
+                        .build());
 
-        mockMvc.perform(get("/product/{id}", 1)
+        when(service.getSale(anyLong())).thenReturn(sale);
+
+        mockMvc.perform(get("/sale/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.category", is("Alimentos")))
-                .andExpect(jsonPath("$.registryNumber", is("200")))
-                .andExpect(jsonPath("$.price", is(5000.0)))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.qty", is(4000.0)))
 
                 .andDo(document("product/get-product",
                         pathParameters(

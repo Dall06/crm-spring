@@ -29,6 +29,6 @@ public class Sale {
     private Client client;
 
     @NotNull(message = "sale creation date cannot be null")
-    @PastOrPresent(message = "sale creation date cannot be in the future")
+    @Past(message = "sale creation date cannot be in the future")
     private LocalDate createdAt;
 }
