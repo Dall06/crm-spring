@@ -43,7 +43,7 @@ class StageControllerTest {
     void getStage() throws Exception {
         given(stageService.getStage(anyLong())).willReturn(Optional.of(Stage.builder().id(1L).name("NombreStage").order(1).build()));
 
-        mockMvc.perform(get("/stage/1")
+        mockMvc.perform(get("/stage/{id}",1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -122,10 +122,13 @@ class StageControllerTest {
 
         Stage stageParam = Stage.builder().id(1L).name("NombreStage").order(1).build();
 
-        mockMvc.perform(put("/stage/1")
+        mockMvc.perform(put("/stage/{id}",1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(stageParam)))
                 .andExpect(status().isNoContent())
+
+
+
                 .andDo(document("stage/put-stage",
                         pathParameters(
                                 parameterWithName("id").description("Identificador de la stage")
@@ -136,12 +139,12 @@ class StageControllerTest {
                                 fieldWithPath("order").description("Orden de la visita")
                         )
 
-                ));;
+                ));
     }
 
     @Test
     void deleteStage() throws Exception {
-        mockMvc.perform(delete("/stage/1")
+        mockMvc.perform(delete("/stage/{id}",1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent())
 
@@ -149,9 +152,5 @@ class StageControllerTest {
                         pathParameters(
                                 parameterWithName("id").description("Identificador de la stage")
                         )));
-
-
     }
-
-
 }

@@ -22,7 +22,7 @@ public class StageController {
         return ResponseEntity.ok("hello to stages api route");
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Stage> getStage(@PathVariable Long id){
+    public ResponseEntity<Stage> getStage(@PathVariable(name = "id") Long id){
         Optional<Stage> stageDb = service.getStage(id);
 
         if (stageDb.isEmpty()) {
@@ -45,14 +45,14 @@ public class StageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> putStage(@PathVariable Long id, @RequestBody Stage stage){
+    public ResponseEntity<Void> putStage(@PathVariable(name = "id") Long id, @RequestBody Stage stage){
         service.updateStage(stage);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStage(@PathVariable Long id){
+    public ResponseEntity<Void> deleteStage(@PathVariable(name = "id") Long id){
         service.deleteStage(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
