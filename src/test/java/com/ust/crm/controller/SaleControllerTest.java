@@ -84,7 +84,7 @@ class SaleControllerTest {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.qty", is(4000.0)))
 
-                .andDo(document("product/get-product",
+                .andDo(document("sale/get-sale",
                         pathParameters(
                                 parameterWithName("id")
                                         .description("Identificador del product")),

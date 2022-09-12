@@ -66,7 +66,7 @@ class VisitControllerTest {
                 .andExpect(jsonPath("$.address", is("Direccion")))
                 .andExpect(jsonPath("$.purpose", is("Proposito")))
 
-                .andDo(document("visit/get-visits",
+                .andDo(document("visit/get-visit",
                         responseFields(
                                 fieldWithPath("id").description("identificador de la visit"),
                                 fieldWithPath("client").description("datos del client"),
@@ -117,7 +117,7 @@ class VisitControllerTest {
                 .andExpect(jsonPath("$[0].address", is("address 1")))
                 .andExpect(jsonPath("$[2].seller", is("seller 3")))
 
-                .andDo(document("visit/get-visit",
+                .andDo(document("visit/get-visits",
                         responseFields(
                                 fieldWithPath("[].id").description("identificador de la visit"),
                                 fieldWithPath("[].client").description("datos del client"),
