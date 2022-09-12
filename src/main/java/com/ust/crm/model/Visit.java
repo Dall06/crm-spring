@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,7 +20,7 @@ public class Visit {
     private Client client;
 
     @FutureOrPresent(message = "visit date must be today or in the future")
-    private LocalDateTime programmedVisitDate;
+    private LocalDate programmedVisitDate;
 
     @NotNull(message = "visit address quantity cannot be null")
     @NotBlank(message = "visit address cannot be empty")

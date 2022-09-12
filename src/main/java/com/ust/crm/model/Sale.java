@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,5 +30,5 @@ public class Sale {
 
     @NotNull(message = "sale creation date cannot be null")
     @PastOrPresent(message = "sale creation date cannot be in the future")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 }

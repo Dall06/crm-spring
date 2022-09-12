@@ -47,7 +47,7 @@ class VisitControllerTest {
     void getVisit() throws Exception {
         Client client = new Client(1L, "Nombre","correo@contacto.com", 10, "Direccion");
 
-        given(visitService.getVisit(anyLong())).willReturn(Optional.of(Visit.builder().id(1L).client(client).programmedVisitDate(deserializer.getDateTime()).address("Direccion").purpose("Proposito").build()));
+        given(visitService.getVisit(anyLong())).willReturn(Optional.of(Visit.builder().id(1L).client(client).programmedVisitDate(deserializer.get()).address("Direccion").purpose("Proposito").build()));
 
         mockMvc.perform(get("/visit/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
@@ -72,19 +72,19 @@ class VisitControllerTest {
     void getVisits() throws Exception {
 
         List<Visit> visits = Arrays.asList(
-                Visit.builder().id(1L).client(new Client(1L, "Nombre 1","correo1@contacto.com", 10, "Direccion1")).programmedVisitDate(deserializer.getDateTime())
+                Visit.builder().id(1L).client(new Client(1L, "Nombre 1","correo1@contacto.com", 10, "Direccion1")).programmedVisitDate(deserializer.get())
                         .address("Direcciondelavisit 1")
                         .purpose("Propositodela visit 1")
                         .seller("Vendedor 1")
                         .build(),
                 Visit.builder().id(2L).client(new Client(2L, "Nombre 2","correo2@contacto.com", 10, "Direccion2"))
-                        .programmedVisitDate(deserializer.getDateTime())
+                        .programmedVisitDate(deserializer.get())
                         .address("Direcciondelavisit 2")
                         .purpose("Propositodela visit 2")
                         .seller("Vendedor 2")
                         .build(),
                 Visit.builder().id(3L).client(new Client(3L, "Nombre 3","correo3@contacto.com", 10, "Direccion3"))
-                        .programmedVisitDate(deserializer.getDateTime())
+                        .programmedVisitDate(deserializer.get())
                         .address("Direcciondelavisit 3")
                         .purpose("Propositodelavisit 3")
                         .seller("Vendedor 3")
@@ -132,13 +132,13 @@ class VisitControllerTest {
         //LocalDate fecha = LocalDate.now();
         Visit visitParametro = Visit.builder().id(1L).client(new Client(1L, "Nombre 1","correo1@contacto.com", 10, "Direccion1"))
                 //.programmedVisitDate(deserializer.get())
-                .programmedVisitDate(deserializer.getDateTime())
+                .programmedVisitDate(deserializer.get())
                 .address("Direcciondelavisit")
                 .purpose("Propositodelavisit")
                 .seller("Vendedor")
                 .build();
         Visit visitRespuesta = Visit.builder().id(1L).client(new Client(1L, "Nombre 1","correo1@contacto.com", 10, "Direccion1"))
-                .programmedVisitDate(deserializer.getDateTime())
+                .programmedVisitDate(deserializer.get())
                 .address("Direcciondelavisit")
                 .purpose("Propositodelavisit")
                 .seller("Vendedor")
@@ -172,7 +172,7 @@ class VisitControllerTest {
     void actualizaVisit() throws Exception {
 
         Visit visitParametro = Visit.builder().id(1L).client(new Client(1L, "Nombre 1","correo1@contacto.com", 10, "Direccion1"))
-                .programmedVisitDate(deserializer.getDateTime())
+                .programmedVisitDate(deserializer.get())
                 .address("Direcciondelavisit")
                 .purpose("Propositodelavisit")
                 .seller("Vendedor")

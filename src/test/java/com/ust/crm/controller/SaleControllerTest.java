@@ -58,7 +58,7 @@ class SaleControllerTest {
                 .qty(500)
                 .client(Client.builder().name("Pedro").email("pedro@mail.com").address("Jerez").employeesQty(30).build())
                 .products(products)
-                .createdAt(deserializer.getDateTime())
+                .createdAt(deserializer.get())
                 .build()));
 
         mockMvc.perform(get("/sale/1")
@@ -88,15 +88,15 @@ class SaleControllerTest {
         );
 
         List<Sale> sales = Arrays.asList(
-                Sale.builder().id(1L).products(products).createdAt(deserializer.getDateTime()).client(
+                Sale.builder().id(1L).products(products).createdAt(deserializer.get()).client(
                                 Client.builder().id(1).name("Angel").email("angel@mail.com").address("Balcones").employeesQty(50).build())
                         .qty(4000)
-                        .createdAt(deserializer.getDateTime())
+                        .createdAt(deserializer.get())
                         .build(),
-                Sale.builder().id(2L).products(products).createdAt(deserializer.getDateTime()).client(
+                Sale.builder().id(2L).products(products).createdAt(deserializer.get()).client(
                                 Client.builder().id(2).name("Angel").email("angel@mail.com").address("Balcones").employeesQty(50).build())
                         .qty(5000)
-                        .createdAt(deserializer.getDateTime())
+                        .createdAt(deserializer.get())
                         .build()
         );
 
@@ -127,15 +127,15 @@ class SaleControllerTest {
                 Product.builder().id(2L).name("Plumas").category("Papeleria").createdAt(deserializer.get()).registryNumber("300").price(500).build(),
                 Product.builder().id(3L).name("Jamon").category("Alimentos").createdAt(deserializer.get()).registryNumber("400").price(100).build()
         );
-        Sale param = Sale.builder().id(1L).qty(800).createdAt(deserializer.getDateTime()).client(
+        Sale param = Sale.builder().id(1L).qty(800).createdAt(deserializer.get()).client(
                         Client.builder().name("Angel").email("angel@mail.com").address("Balcones").employeesQty(50).build())
                 .products(products)
-                .createdAt(deserializer.getDateTime())
+                .createdAt(deserializer.get())
                 .build();
-        Sale response = Sale.builder().id(2L).qty(8000).createdAt(deserializer.getDateTime()).client(
+        Sale response = Sale.builder().id(2L).qty(8000).createdAt(deserializer.get()).client(
                         Client.builder().name("Omar").email("omar@mail.com").address("Anzures").employeesQty(500).build())
                 .products(products)
-                .createdAt(deserializer.getDateTime())
+                .createdAt(deserializer.get())
                 .build();
 
         given(service.saveSale(param)).willReturn(response);
@@ -165,10 +165,10 @@ class SaleControllerTest {
                 Product.builder().id(3L).name("Jamon").category("Alimentos").createdAt(deserializer.get()).registryNumber("400").price(100).build()
         );
 
-        Sale saleParam = Sale.builder().id(1L).qty(800).createdAt(deserializer.getDateTime()).client(
+        Sale saleParam = Sale.builder().id(1L).qty(800).createdAt(deserializer.get()).client(
                         Client.builder().name("Angel").email("angel@mail.com").address("Balcones").employeesQty(50).build())
                 .products(products)
-                .createdAt(deserializer.getDateTime())
+                .createdAt(deserializer.get())
                 .build();
 
         mockMvc.perform(put("/sale/1")

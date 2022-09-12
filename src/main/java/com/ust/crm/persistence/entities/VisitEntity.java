@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,7 +21,7 @@ public class VisitEntity {
     private ClientEntity client;
 
     @Column(name = "visit_date", nullable = false)
-    private LocalDateTime programmedVisitDate;
+    private LocalDate programmedVisitDate;
 
     @Column(name = "visit_address", nullable = false)
     private String address;
