@@ -24,7 +24,7 @@ public class SaleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Sale> getSale(@PathVariable Long id){
+    public ResponseEntity<Sale> getSale(@PathVariable(name = "id") Long id){
         Optional<Sale> ventaDb = service.getSale(id);
 
         if (ventaDb.isEmpty()) {
@@ -34,7 +34,7 @@ public class SaleController {
         return ResponseEntity.ok(ventaDb.get());
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity <List<Sale>> getSales(){
         return ResponseEntity.ok(service.getSales());
     }
@@ -47,14 +47,14 @@ public class SaleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> putSale(@PathVariable Long id, @RequestBody Sale sale){
+    public ResponseEntity<Void> putSale(@PathVariable(name = "id") Long id, @RequestBody Sale sale){
         service.updateSale(sale);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSale(@PathVariable Long id){
+    public ResponseEntity<Void> deleteSale(@PathVariable(name = "id") Long id){
         service.deleteSale(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

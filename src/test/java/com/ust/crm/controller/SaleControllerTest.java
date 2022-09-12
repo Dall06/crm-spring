@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.Assert;
 
@@ -25,9 +26,14 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -53,28 +59,41 @@ class SaleControllerTest {
                 Product.builder().id(2L).name("Plumas").category("Papeleria").createdAt(deserializer.get()).registryNumber("300").price(500).build(),
                 Product.builder().id(3L).name("Jamon").category("Alimentos").createdAt(deserializer.get()).registryNumber("400").price(100).build()
         );
-        given(service.getSale(anyLong())).willReturn(Optional.of(Sale.builder()
-                .id(1L)
-                .qty(500)
-                .client(Client.builder().name("Pedro").email("pedro@mail.com").address("Jerez").employeesQty(30).build())
-                .products(products)
-                .createdAt(deserializer.get())
-                .build()));
 
-        mockMvc.perform(get("/sale/1")
+        given(service.getSale(anyLong())).willReturn(
+                Optional.of(Sale.builder().id(1L).products(products).createdAt(deserializer.get()).client(
+                                Client.builder().id(1).name("Angel").email("angel@mail.com").address("Balcones").employeesQty(50).build())
+                        .qty(4000)
+                        .createdAt(deserializer.get())
+                        .build()));
+
+        mockMvc.perform(get("/product/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.qty", is(500.0)))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andDo(document("sale/get-sale",
+                .andExpect(jsonPath("$.category", is("Alimentos")))
+                .andExpect(jsonPath("$.registryNumber", is("200")))
+                .andExpect(jsonPath("$.price", is(5000.0)))
+
+                .andDo(document("product/get-product",
                         pathParameters(
                                 parameterWithName("id")
-                                        .description("Identificador de la sale")),
+                                        .description("Identificador del product")),
                         responseFields(
                                 fieldWithPath("id").description("Identificador de la sale"),
                                 fieldWithPath("qty").description("Monto de la sale"),
-                                fieldWithPath("createdAt").description("Fecha de creacion de la sale")
+                                fieldWithPath("createdAt").description("Fecha de creacion de la sale"),
+                                fieldWithPath("products[].id").description("lista de productos id"),
+                                fieldWithPath("products[].name").description("lista de productos id"),
+                                fieldWithPath("products[].category").description("lista de productos id"),
+                                fieldWithPath("products[].createdAt").description("lista de productos id"),
+                                fieldWithPath("products[].registryNumber").description("lista de productos id"),
+                                fieldWithPath("products[].price").description("lista de productos id"),
+                                fieldWithPath("client.id").description("lista de productos id"),
+                                fieldWithPath("client.name").description("lista de productos id"),
+                                fieldWithPath("client.email").description("lista de productos id"),
+                                fieldWithPath("client.employeesQty").description("lista de productos id"),
+                                fieldWithPath("client.address").description("lista de productos id")
                         )));
     }
 
@@ -110,15 +129,26 @@ class SaleControllerTest {
                 .andExpect(jsonPath("$[1].id", is(2)))
                 .andDo(document("sale/get-sales",
                         responseFields(
-                                fieldWithPath("id").description("Identificador de la sale"),
-                                fieldWithPath("qty").description("Monto de la sale"),
-                                fieldWithPath("createdAt").description("Fecha de creacion de la sale")
+                                fieldWithPath("[].id").description("Identificador de la sale"),
+                                fieldWithPath("[].qty").description("Monto de la sale"),
+                                fieldWithPath("[].createdAt").description("Fecha de creacion de la sale"),
+                                fieldWithPath("[].products[].id").description("lista de productos id"),
+                                fieldWithPath("[].products[].name").description("lista de productos id"),
+                                fieldWithPath("[].products[].category").description("lista de productos id"),
+                                fieldWithPath("[].products[].createdAt").description("lista de productos id"),
+                                fieldWithPath("[].products[].registryNumber").description("lista de productos id"),
+                                fieldWithPath("[].products[].price").description("lista de productos id"),
+                                fieldWithPath("[].client.id").description("lista de productos id"),
+                                fieldWithPath("[].client.name").description("lista de productos id"),
+                                fieldWithPath("[].client.email").description("lista de productos id"),
+                                fieldWithPath("[].client.employeesQty").description("lista de productos id"),
+                                fieldWithPath("[].client.address").description("lista de productos id")
                         )));
 
     }
 
     @Test
-    void creaSale() throws Exception {
+    void postSale() throws Exception {
 
         LocalDateTime ahora = LocalDateTime.of(LocalDate.now(), LocalTime.now());
 
@@ -145,19 +175,29 @@ class SaleControllerTest {
                         .content(new ObjectMapper().writeValueAsString(param)))
                 .andExpect(status().isCreated())
                 .andDo(document("sale/post-sale",
-                        pathParameters(
-                                parameterWithName("id")
-                                        .description("Identificador de la sale")),
-                        responseFields(
+                        requestFields(
                                 fieldWithPath("id").description("Identificador de la sale"),
                                 fieldWithPath("qty").description("Monto de la sale"),
-                                fieldWithPath("createdAt").description("Fecha de creacion de la sale")
+                                fieldWithPath("createdAt").description("Fecha de creacion de la sale"),
+                                fieldWithPath("products[].id").description("lista de productos id"),
+                                fieldWithPath("products[].name").description("lista de productos id"),
+                                fieldWithPath("products[].category").description("lista de productos id"),
+                                fieldWithPath("products[].createdAt").description("lista de productos id"),
+                                fieldWithPath("products[].registryNumber").description("lista de productos id"),
+                                fieldWithPath("products[].price").description("lista de productos id"),
+                                fieldWithPath("client.id").description("lista de productos id"),
+                                fieldWithPath("client.name").description("lista de productos id"),
+                                fieldWithPath("client.email").description("lista de productos id"),
+                                fieldWithPath("client.employeesQty").description("lista de productos id"),
+                                fieldWithPath("client.address").description("lista de productos id")
+                        ),responseHeaders(
+                                headerWithName("Location").description("Product generated successfully")
                         )));
 
     }
 
     @Test
-    void actualizaSale() throws Exception {
+    void putSale() throws Exception {
 
         List<Product> products = Arrays.asList(
                 Product.builder().id(1L).name("Papas").category("Alimentos").createdAt(deserializer.get()).registryNumber("200").price(5000).build(),
@@ -171,7 +211,7 @@ class SaleControllerTest {
                 .createdAt(deserializer.get())
                 .build();
 
-        mockMvc.perform(put("/sale/1")
+        mockMvc.perform(put("/sale/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(saleParam)))
                 .andExpect(status().isNoContent())
@@ -179,28 +219,34 @@ class SaleControllerTest {
                         pathParameters(
                                 parameterWithName("id")
                                         .description("Identificador de la sale")),
-                        responseFields(
+                        requestFields(
                                 fieldWithPath("id").description("Identificador de la sale"),
                                 fieldWithPath("qty").description("Monto de la sale"),
-                                fieldWithPath("createdAt").description("Fecha de creacion de la sale")
+                                fieldWithPath("createdAt").description("Fecha de creacion de la sale"),
+                                fieldWithPath("products[].id").description("lista de productos id"),
+                                fieldWithPath("products[].name").description("lista de productos id"),
+                                fieldWithPath("products[].category").description("lista de productos id"),
+                                fieldWithPath("products[].createdAt").description("lista de productos id"),
+                                fieldWithPath("products[].registryNumber").description("lista de productos id"),
+                                fieldWithPath("products[].price").description("lista de productos id"),
+                                fieldWithPath("client.id").description("lista de productos id"),
+                                fieldWithPath("client.name").description("lista de productos id"),
+                                fieldWithPath("client.email").description("lista de productos id"),
+                                fieldWithPath("client.employeesQty").description("lista de productos id"),
+                                fieldWithPath("client.address").description("lista de productos id")
                         )));
 
     }
 
     @Test
-    void eliminaSale() throws Exception {
+    void deleteSale() throws Exception {
 
-        mockMvc.perform(delete("/sale/1")
+        mockMvc.perform(RestDocumentationRequestBuilders.delete("/sale/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent())
                 .andDo(document("sale/delete-sale",
                         pathParameters(
-                                parameterWithName("id")
-                                        .description("Identificador de la sale")),
-                        responseFields(
-                                fieldWithPath("id").description("Identificador de la sale"),
-                                fieldWithPath("qty").description("Monto de la sale"),
-                                fieldWithPath("createdAt").description("Fecha de creacion de la sale")
+                                parameterWithName("id").description("Identificador de la venta")
                         )));
     }
 }

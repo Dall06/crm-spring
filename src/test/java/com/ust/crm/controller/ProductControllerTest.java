@@ -43,8 +43,15 @@ class ProductControllerTest {
 
     @Test
     void getProduct() throws Exception {
-        given(service.getProduct(anyLong())).willReturn(Optional.of(Product.builder().id(1L).
-                name("Papas").category("Alimentos").createdAt(LocalDate.now()).registryNumber("200").price(5000).build()));
+        given(service.getProduct(anyLong())).willReturn(
+                Optional.of(Product.builder()
+                        .id(1L)
+                        .name("Papas")
+                        .category("Alimentos")
+                        .createdAt(LocalDate.now())
+                        .registryNumber("200")
+                        .price(5000)
+                        .build()));
 
         mockMvc.perform(get("/product/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
