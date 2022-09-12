@@ -47,7 +47,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> putProduct(@PathVariable Long id, @RequestBody Product product){
+    public ResponseEntity<Void> putProduct(@PathVariable(name = "id") Long id, @RequestBody Product product){
         service.updateProduct(product);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

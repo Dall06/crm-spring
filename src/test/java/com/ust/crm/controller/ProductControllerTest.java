@@ -21,10 +21,11 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,9 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
-    //@Autowired
-    //private TestRestTemplate restTemplate;
 
     @MockBean
     private ProductService service;
@@ -115,23 +113,26 @@ class ProductControllerTest {
                         .content(new ObjectMapper().writeValueAsString(param)))
                 .andExpect(status().isCreated())
                 .andDo(document("product/post-product",
-                        responseFields(
+                        requestFields(
                                 fieldWithPath("id").description("Identificador del product"),
                                 fieldWithPath("name").description("Nombre del product"),
                                 fieldWithPath("category").description("Correo de contacto del product"),
                                 fieldWithPath("price").description("Número de trabajadores del product"),
                                 fieldWithPath("registryNumber").description("Domicilio del product"),
                                 fieldWithPath("createdAt").description("Fecha de creacion del product")
+                        ),
+                        responseHeaders(
+                                headerWithName("Location").description("Product generated successfully")
                         )));
 
     }
 
     @Test
-    void actualizaProduct() throws Exception {
+    void putProduct() throws Exception {
 
         Product clienteParametro = Product.builder().id(1L).name("Papas").category("Alimentos").createdAt(deserializer.get()).registryNumber("200").price(5000).build();
 
-        mockMvc.perform(put("/product/1")
+        mockMvc.perform(put("/product/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(clienteParametro)))
                 .andExpect(status().isNoContent())
@@ -139,7 +140,7 @@ class ProductControllerTest {
                         pathParameters(
                                 parameterWithName("id")
                                         .description("Identificador del product")),
-                        responseFields(
+                        requestFields(
                                 fieldWithPath("id").description("Identificador del product"),
                                 fieldWithPath("name").description("Nombre del product"),
                                 fieldWithPath("category").description("Correo de contacto del product"),
@@ -151,23 +152,15 @@ class ProductControllerTest {
     }
 
     @Test
-    void eliminaProduct() throws Exception {
+    void deleteProduct() throws Exception {
 
-        mockMvc.perform(delete("/product/1")
+        mockMvc.perform(delete("/product/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent())
 
-                .andDo(document("product/delete-product",
+                .andDo(document("client/delete-client",
                         pathParameters(
-                                parameterWithName("id")
-                                        .description("Identificador del product")),
-                        responseFields(
-                                fieldWithPath("id").description("Identificador del product"),
-                                fieldWithPath("name").description("Nombre del product"),
-                                fieldWithPath("category").description("Correo de contacto del product"),
-                                fieldWithPath("price").description("Número de trabajadores del product"),
-                                fieldWithPath("registryNumber").description("Domicilio del product"),
-                                fieldWithPath("createdAt").description("Fecha de creacion del product")
+                                parameterWithName("id").description("Identificador del cliente")
                         )));
     }
 
