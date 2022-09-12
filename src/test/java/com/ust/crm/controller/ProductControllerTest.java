@@ -20,15 +20,14 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureRestDocs
 @WebMvcTest(ProductController.class)
@@ -49,7 +48,7 @@ class ProductControllerTest {
         given(service.getProduct(anyLong())).willReturn(Optional.of(Product.builder().id(1L).
                 name("Papas").category("Alimentos").createdAt(LocalDate.now()).registryNumber("200").price(5000).build()));
 
-        mockMvc.perform(get("/producto/1")
+        mockMvc.perform(get("/product/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -57,17 +56,17 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.registryNumber", is("200")))
                 .andExpect(jsonPath("$.price", is(5000.0)))
 
-                .andDo(document("producto/get-producto",
+                .andDo(document("product/get-product",
                         pathParameters(
-                                parameterWithName("productoId")
-                                        .description("Identificador del producto")),
+                                parameterWithName("id")
+                                        .description("Identificador del product")),
                         responseFields(
                                 fieldWithPath("id").description("Identificador del cliente"),
                                 fieldWithPath("name").description("Nombre del cliente"),
                                 fieldWithPath("category").description("Correo de contacto del cliente"),
                                 fieldWithPath("price").description("Número de trabajadores del cliente"),
                                 fieldWithPath("registryNumber").description("Domicilio del cliente"),
-                                fieldWithPath("createdAt").description("Fecha de creacion del producto")
+                                fieldWithPath("createdAt").description("Fecha de creacion del product")
                         )));
 
     }
@@ -76,56 +75,53 @@ class ProductControllerTest {
     @Test
     void getProducts() throws Exception {
 
-        List<Product> productos = Arrays.asList(
+        List<Product> products = Arrays.asList(
                 Product.builder().id(1L).name("Papas").category("Alimentos").createdAt(deserializer.get()).registryNumber("200").price(5000).build(),
                 Product.builder().id(2L).name("Plumas").category("Papeleria").createdAt(deserializer.get()).registryNumber("300").price(500).build(),
                 Product.builder().id(3L).name("Jamon").category("Alimentos").createdAt(deserializer.get()).registryNumber("400").price(100).build()
         );
 
-        given(service.getProducts()).willReturn(productos);
+        given(service.getProducts()).willReturn(products);
 
-        mockMvc.perform(get("/producto/all")
+        mockMvc.perform(get("/product/all")
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id", is(1)))
                 .andExpect(jsonPath("$[1].id", is(2)))
                 .andExpect(jsonPath("$[2].id", is(3)))
-                .andDo(document("producto/get-productos",
+                .andDo(document("product/get-products",
                         responseFields(
-                                fieldWithPath("id").description("Identificador del cliente"),
-                                fieldWithPath("name").description("Nombre del cliente"),
-                                fieldWithPath("category").description("Correo de contacto del cliente"),
-                                fieldWithPath("price").description("Número de trabajadores del cliente"),
-                                fieldWithPath("registryNumber").description("Domicilio del cliente"),
-                                fieldWithPath("createdAt").description("Fecha de creacion del producto")
+                                fieldWithPath("[].id").description("Identificador del cliente"),
+                                fieldWithPath("[].name").description("Nombre del cliente"),
+                                fieldWithPath("[].category").description("Correo de contacto del cliente"),
+                                fieldWithPath("[].price").description("Número de trabajadores del cliente"),
+                                fieldWithPath("[].registryNumber").description("Domicilio del cliente"),
+                                fieldWithPath("[].createdAt").description("Fecha de creacion del product")
                         )));
 
     }
 
     @Test
-    void creaProduct() throws Exception {
+    void postProduct() throws Exception {
         //String formattedDate = today.format(DateTimeFormatter.ofPattern("dd-MMM-yy")
         Product param = Product.builder().name("Papas").category("Alimentos").createdAt(deserializer.get()).registryNumber("200").price(1000).build();
         Product response = Product.builder().id(1L).name("Papas").category("Alimentos").createdAt(LocalDate.now()).registryNumber("200").price(1000).build();
 
         given(service.saveProduct(param)).willReturn(response);
 
-        mockMvc.perform(post("/producto")
+        mockMvc.perform(post("/product/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(param)))
                 .andExpect(status().isCreated())
-                .andDo(document("producto/post-producto",
-                        pathParameters(
-                                parameterWithName("productoId")
-                                        .description("Identificador del producto")),
+                .andDo(document("product/post-product",
                         responseFields(
-                                fieldWithPath("id").description("Identificador del producto"),
-                                fieldWithPath("name").description("Nombre del producto"),
-                                fieldWithPath("category").description("Correo de contacto del producto"),
-                                fieldWithPath("price").description("Número de trabajadores del producto"),
-                                fieldWithPath("registryNumber").description("Domicilio del producto"),
-                                fieldWithPath("createdAt").description("Fecha de creacion del producto")
+                                fieldWithPath("id").description("Identificador del product"),
+                                fieldWithPath("name").description("Nombre del product"),
+                                fieldWithPath("category").description("Correo de contacto del product"),
+                                fieldWithPath("price").description("Número de trabajadores del product"),
+                                fieldWithPath("registryNumber").description("Domicilio del product"),
+                                fieldWithPath("createdAt").description("Fecha de creacion del product")
                         )));
 
     }
@@ -135,21 +131,21 @@ class ProductControllerTest {
 
         Product clienteParametro = Product.builder().id(1L).name("Papas").category("Alimentos").createdAt(deserializer.get()).registryNumber("200").price(5000).build();
 
-        mockMvc.perform(put("/producto/1")
+        mockMvc.perform(put("/product/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(clienteParametro)))
                 .andExpect(status().isNoContent())
-                .andDo(document("producto/put-producto",
+                .andDo(document("product/put-product",
                         pathParameters(
-                                parameterWithName("productoId")
-                                        .description("Identificador del producto")),
+                                parameterWithName("id")
+                                        .description("Identificador del product")),
                         responseFields(
-                                fieldWithPath("id").description("Identificador del producto"),
-                                fieldWithPath("name").description("Nombre del producto"),
-                                fieldWithPath("category").description("Correo de contacto del producto"),
-                                fieldWithPath("price").description("Número de trabajadores del producto"),
-                                fieldWithPath("registryNumber").description("Domicilio del producto"),
-                                fieldWithPath("createdAt").description("Fecha de creacion del producto")
+                                fieldWithPath("id").description("Identificador del product"),
+                                fieldWithPath("name").description("Nombre del product"),
+                                fieldWithPath("category").description("Correo de contacto del product"),
+                                fieldWithPath("price").description("Número de trabajadores del product"),
+                                fieldWithPath("registryNumber").description("Domicilio del product"),
+                                fieldWithPath("createdAt").description("Fecha de creacion del product")
                         )));
 
     }
@@ -157,21 +153,21 @@ class ProductControllerTest {
     @Test
     void eliminaProduct() throws Exception {
 
-        mockMvc.perform(delete("/producto/1")
+        mockMvc.perform(delete("/product/1")
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isNoContent())
 
-                .andDo(document("producto/delete-producto",
+                .andDo(document("product/delete-product",
                         pathParameters(
-                                parameterWithName("productoId")
-                                        .description("Identificador del producto")),
+                                parameterWithName("id")
+                                        .description("Identificador del product")),
                         responseFields(
-                                fieldWithPath("id").description("Identificador del producto"),
-                                fieldWithPath("name").description("Nombre del producto"),
-                                fieldWithPath("category").description("Correo de contacto del producto"),
-                                fieldWithPath("price").description("Número de trabajadores del producto"),
-                                fieldWithPath("registryNumber").description("Domicilio del producto"),
-                                fieldWithPath("createdAt").description("Fecha de creacion del producto")
+                                fieldWithPath("id").description("Identificador del product"),
+                                fieldWithPath("name").description("Nombre del product"),
+                                fieldWithPath("category").description("Correo de contacto del product"),
+                                fieldWithPath("price").description("Número de trabajadores del product"),
+                                fieldWithPath("registryNumber").description("Domicilio del product"),
+                                fieldWithPath("createdAt").description("Fecha de creacion del product")
                         )));
     }
 

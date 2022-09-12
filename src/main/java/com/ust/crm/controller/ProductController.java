@@ -24,7 +24,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable Long id){
+    public ResponseEntity<Product> getProduct(@PathVariable(name = "id") Long id){
         Optional<Product> productoDb = service.getProduct(id);
 
         if (productoDb.isEmpty()) {
@@ -34,12 +34,12 @@ public class ProductController {
         return ResponseEntity.ok(productoDb.get());
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity <List<Product>> getProducts(){
         return ResponseEntity.ok(service.getProducts());
     }
 
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<Void> postProduct(@RequestBody Product product){
         Product newProduct = service.saveProduct(product);
 
