@@ -24,7 +24,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Client> getClient(@PathVariable Long id){
+    public ResponseEntity<Client> getClient(@PathVariable(name = "id") Long id){
         Optional<Client> clientDb = service.getClient(id);
 
         if (clientDb.isEmpty()) {

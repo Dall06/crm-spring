@@ -51,7 +51,7 @@ class ClientControllerTest {
                         .employeesQty(20)
                         .address("Monjaraz").build()));
 
-        mockMvc.perform(get("/client/1")
+        mockMvc.perform(get("/client/{id}", 1)
                         .content(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -60,7 +60,7 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.name", is("Alec")))
                 .andDo(document("client/get-client",
                         pathParameters(
-                                parameterWithName("client_id")
+                                parameterWithName("id")
                                         .description("Identificador del client")),
                         responseFields(
                                 fieldWithPath("id").description("Identificador del client"),
