@@ -1,4 +1,4 @@
 FROM openjdk:11
 EXPOSE 8080
-ADD target/crm.jar crm.jar
+ADD target/crm-0.0.1.jar crm-0.0.1.jar
 ENTRYPOINT ["java","-jar","/crm.jar"]
